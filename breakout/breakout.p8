@@ -28,15 +28,8 @@ function _update() -- runs every frame
 	screen_bounce()
 	ball_movement()
 	--ball_pulse()
+	change_paddle_colour_on_collision()
 
-	-- change paddle colour on collision
-	if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
-		paddle_collision = 8
-		sfx(1)
-		ball_y_move = -ball_y_move
-	else
-		paddle_collision = 7
-	end
 end
 
 function _draw() -- runs every frame (after update)
@@ -85,6 +78,7 @@ function screen_bounce()
 end
 
 function screen_paddle_limit()
+	-- stop paddle moving out of screen limit (I added this code myself)
 	if paddle_x_pos+paddle_width > 127 then
 	 right_edge = true
 		paddle_x_pos = 128-paddle_width
@@ -101,20 +95,29 @@ end
 
 function paddle_movement()
 	local button_press = false
+
+	-- if button pressed, set speed
 	if btn(0) and left_edge == false then
 	paddle_x_speed = -5 --left
 	button_press = true
 	end
+
+	-- if button pressed, set speed
 	if btn(1) and right_edge == false then
 	paddle_x_speed = 5 --right
 	button_press = true
 	end
+
+	-- when button no longer pressed, decelerate
 	if not(button_press) then
 		paddle_x_speed=paddle_x_speed/2
 	end
+	
+	-- assign the speed to actually move the paddle
 	paddle_x_pos += paddle_x_speed 
 end
 
+-- this collision code checks the ball has NOT hit, so non-collision? :)
 function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
 	-- find top of ball and left edge of paddle	
 	if ball_y_pos - ball_radius > paddle_y_pos + paddle_height then		
@@ -133,6 +136,16 @@ function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_
 		return false -- ball has not hit top edge of paddle
 	end
 	return true
+end
+
+function change_paddle_colour_on_collision()
+	if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
+		paddle_collision = 8
+		sfx(1)
+		ball_y_move = -ball_y_move
+	else
+		paddle_collision = 7
+	end
 end
 
 
