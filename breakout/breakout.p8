@@ -3,23 +3,6 @@ version 36
 __lua__
 -- super breakout
 -- owen fitzgerald
-
-
--- save
--- me
--- on
--- github
--- now!
-
-
-
-
-
-
-
-
-
-
 function _init() -- runs once at start
 	cls(0)
 	-- ball info
@@ -45,16 +28,15 @@ function _update() -- runs every frame
 	screen_bounce()
 	ball_movement()
 	--ball_pulse()
-	paddle_hit_location()	
 
 	-- change paddle colour on collision
-	-- if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
-	-- 	paddle_collision = 8
-	-- 	sfx(1)
-	-- 	ball_y_move = -ball_y_move
-	-- else
-	-- 	paddle_collision = 7
-	-- end
+	if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
+		paddle_collision = 8
+		sfx(1)
+		ball_y_move = -ball_y_move
+	else
+		paddle_collision = 7
+	end
 end
 
 function _draw() -- runs every frame (after update)
@@ -62,7 +44,6 @@ function _draw() -- runs every frame (after update)
 	rectfill(0,0,127,127,1) -- the game area
 	circfill(ball_x_pos, ball_y_pos, ball_radius, 10) -- draw the ball
 	draw_paddle()
-	print("save me on github now!", 20, 45, 8)
 	--print(location, 0, 0, 8)
 	--print('Ball top '..ball_y_pos-ball_radius, 0, 10, 7)
 	--print('ball_y_pos+ball_radius '..ball_y_pos+ball_radius, 0, 20, 7)
@@ -134,49 +115,24 @@ function paddle_movement()
 	paddle_x_pos += paddle_x_speed 
 end
 
--- function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
--- 	-- find top of ball and left edge of paddle	
--- 	if ball_y_pos - ball_radius > paddle_y_pos + paddle_height then		
--- 		return false -- ball has not hit left edge of paddle
--- 	end
--- 	-- find bottom of ball and top edge of paddle
--- 	if ball_y_pos + ball_radius < paddle_y_pos then -- I think this is wrong		
--- 		return false -- ball has not hit top edge of paddle
--- 	end
--- 	-- find left side of ball and right edge of paddle	
--- 	if ball_x_pos - ball_radius > paddle_x_pos + paddle_width then		
--- 		return false -- ball has not hit left edge of paddle
--- 	end
--- 	-- find bottm of ball and top edge of paddle
--- 	if ball_x_pos + ball_radius < paddle_x_pos then -- I think this is wrong		
--- 		return false -- ball has not hit top edge of paddle
--- 	end
--- 	return true
--- end
-
-function paddle_hit_location()
-	-- did bottom of ball hit top of paddle?
-	if (ball_y_pos + ball_radius == paddle_y_pos-1) and
-	   ball_x_pos >= paddle_x_pos and
-	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
-		ball_y_move = -ball_y_move
-		sfx(1)
+function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
+	-- find top of ball and left edge of paddle	
+	if ball_y_pos - ball_radius > paddle_y_pos + paddle_height then		
+		return false -- ball has not hit left edge of paddle
 	end
-	-- did top of ball hit bottm of paddle?
-	if ball_y_pos-ball_radius == (paddle_y_pos+paddle_height+1) and
-	   ball_x_pos >= paddle_x_pos and
-	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
-		ball_y_move = -ball_y_move	
-		sfx(1)
+	-- find bottom of ball and top edge of paddle
+	if ball_y_pos + ball_radius < paddle_y_pos then -- I think this is wrong		
+		return false -- ball has not hit top edge of paddle
 	end
-	-- did right side of ball hit left side of paddle?
-	if (ball_y_pos >= paddle_y_pos) and 
-	   (ball_y_pos <= paddle_y_pos+paddle_height) and
-	   ball_x_pos+ball_radius+1 >= paddle_x_pos and
-	   ball_x_pos+ball_radius+1 <= paddle_x_pos+paddle_height then		
-		ball_x_move = -ball_x_move		
-		sfx(1)
-	end	
+	-- find left side of ball and right edge of paddle	
+	if ball_x_pos - ball_radius > paddle_x_pos + paddle_width then		
+		return false -- ball has not hit left edge of paddle
+	end
+	-- find bottm of ball and top edge of paddle
+	if ball_x_pos + ball_radius < paddle_x_pos then -- I think this is wrong		
+		return false -- ball has not hit top edge of paddle
+	end
+	return true
 end
 
 
