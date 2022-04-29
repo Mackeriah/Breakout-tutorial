@@ -7,10 +7,10 @@ box_w = 64
 box_h = 30
 
 -- relates to the line simulating the ball impact
-rayx = 0
-rayy = 0
-raydx = 2
-raydy = 2
+ball_start_x_pos = 0
+ball_start_y_pos = 0
+ball_horizontal_movement = 2
+ball_vertical_movement = 1
 -- top left = 2, 2
 -- top right = -2, 2
 -- bottom left = 2, -2
@@ -22,18 +22,18 @@ function _init()
 end
 
 function _update()
- -- this handles the keys moving the line around
+ -- this moves the line/ball starting point
  if btn(1) then
-  rayx+=1
+  ball_start_x_pos+=1
  end
  if btn(0) then
-  rayx-=1
+  ball_start_x_pos-=1
  end
  if btn(2) then
-  rayy-=1
+  ball_start_y_pos-=1
  end
  if btn(3) then
-  rayy+=1
+  ball_start_y_pos+=1
  end 
 end
 
@@ -41,16 +41,22 @@ function _draw()
  cls()
  -- draw the box
  rect(box_x, box_y, box_x+box_w, box_y+box_h, 7)
- --print('rayx '..rayx, 0, 80, 7)
- local px, py = rayx, rayy
-
+ print('ball_start_x_pos '..ball_start_x_pos, 0, 80, 7)
+ print('ball_start_y_pos '..ball_start_y_pos, 0, 90, 7)
+ 
+ -- create local versions of ball position (needed for drawing for some reason)
+ local local_ball_start_x_pos, local_ball_start_y_pos = ball_start_x_pos, ball_start_y_pos
+ 
  repeat
-  pset(px, py, 11)  -- sets the line colour
-  px+=raydx         
-  py+=raydy
- until px<0 or px>128 or py < 0 or py > 128  -- until off the screen
+  -- draw coloured line between ball start and end points UNTIL...
+  pset(local_ball_start_x_pos, local_ball_start_y_pos, 11)
+  -- update local variables with actual position
+  local_ball_start_x_pos+=ball_horizontal_movement         
+  local_ball_start_y_pos+=ball_vertical_movement
+  -- ...either end of line moves off the screen
+ until local_ball_start_x_pos<0 or local_ball_start_x_pos>128 or local_ball_start_y_pos < 0 or local_ball_start_y_pos > 128
 
- if deflx_ballbox(rayx,rayy,raydx,raydy,box_x,box_y,box_w,box_h) then
+ if deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movement,ball_vertical_movement,box_x,box_y,box_w,box_h) then
   print("horizontal")
  else
   print("vertical")
@@ -59,12 +65,13 @@ function _draw()
 end
 
 function deflx_ballbox(bx,by,bdx,bdy,tx,ty,tw,th)
- -- calculate wether to deflect ball horizontally or vertically
+ -- calculate whether to deflect ball horizontally or vertically
 
-  -- if ball moving perfectly vertically we don't use function
+  -- if ball moving perfectly vertically exit function
  if bdx == 0 then 
   return false
- elseif bdy == 0 then -- and if ball horizontally we don't either  
+ -- if ball moving perfectly horizontally exit function
+ elseif bdy == 0 then
   return true
  else -- if it's neither of those cases, it MUST be moving diagonally
   -- calculate slope
