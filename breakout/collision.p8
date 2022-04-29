@@ -6,8 +6,6 @@ box_y = 58
 box_w = 64
 box_h = 30
 
--- test
-
 -- relates to the line simulating the ball impact
 ball_start_x_pos = 0
 ball_start_y_pos = 0
