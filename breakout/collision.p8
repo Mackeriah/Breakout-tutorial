@@ -64,7 +64,7 @@ function _draw()
  print(debug1)
 end
 
-function deflx_ballbox(bx,by,bdx,bdy,tx,ty,tw,th)
+function deflx_ballbox(ball_start_x_pos,by,bdx,bdy,tx,ty,tw,th)
  -- calculate whether to deflect ball horizontally or vertically
 
   -- if ball moving perfectly vertically exit function
@@ -81,7 +81,7 @@ function deflx_ballbox(bx,by,bdx,bdy,tx,ty,tw,th)
   if slp > 0 and bdx > 0 then
    -- moving down right
    debug1="q1 top left"
-   cx = tx-bx
+   cx = tx-ball_start_x_pos
    cy = ty-by
    if cx<=0 then
     return false
@@ -93,7 +93,7 @@ function deflx_ballbox(bx,by,bdx,bdy,tx,ty,tw,th)
   elseif slp < 0 and bdx > 0 then
    debug1="q2 bottom left"
    -- moving up right
-   cx = tx-bx
+   cx = tx-ball_start_x_pos
    cy = ty+th-by
    if cx<=0 then
     return false
@@ -105,7 +105,7 @@ function deflx_ballbox(bx,by,bdx,bdy,tx,ty,tw,th)
   elseif slp > 0 and bdx < 0 then
    debug1="q3 bottom right"
    -- moving left up
-   cx = tx+tw-bx
+   cx = tx+tw-ball_start_x_pos
    cy = ty+th-by
    if cx>=0 then
     return false
@@ -117,7 +117,7 @@ function deflx_ballbox(bx,by,bdx,bdy,tx,ty,tw,th)
   else
    -- moving left down
    debug1="q4 top right"
-   cx = tx+tw-bx
+   cx = tx+tw-ball_start_x_pos
    cy = ty-by
    if cx>=0 then
     return false
