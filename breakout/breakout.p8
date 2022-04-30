@@ -3,6 +3,7 @@ version 36
 __lua__
 -- super breakout
 -- owen fitzgerald
+
 function _init() -- runs once at start
 	cls(0)
 	-- ball info
@@ -28,8 +29,16 @@ function _update() -- runs every frame
 	screen_bounce()
 	ball_movement()
 	--ball_pulse()
-	change_paddle_colour_on_collision()
+	paddle_hit_location()	
 
+	-- change paddle colour on collision
+	-- if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
+	-- 	paddle_collision = 8
+	-- 	sfx(1)
+	-- 	ball_y_move = -ball_y_move
+	-- else
+	-- 	paddle_collision = 7
+	-- end
 end
 
 function _draw() -- runs every frame (after update)
@@ -37,6 +46,7 @@ function _draw() -- runs every frame (after update)
 	rectfill(0,0,127,127,1) -- the game area
 	circfill(ball_x_pos, ball_y_pos, ball_radius, 10) -- draw the ball
 	draw_paddle()
+	print("save me on github now!", 20, 45, 8)
 	--print(location, 0, 0, 8)
 	--print('Ball top '..ball_y_pos-ball_radius, 0, 10, 7)
 	--print('ball_y_pos+ball_radius '..ball_y_pos+ball_radius, 0, 20, 7)
@@ -78,7 +88,6 @@ function screen_bounce()
 end
 
 function screen_paddle_limit()
-	-- stop paddle moving out of screen limit (I added this code myself)
 	if paddle_x_pos+paddle_width > 127 then
 	 right_edge = true
 		paddle_x_pos = 128-paddle_width
@@ -95,57 +104,63 @@ end
 
 function paddle_movement()
 	local button_press = false
-
-	-- if button pressed, set speed
 	if btn(0) and left_edge == false then
 	paddle_x_speed = -5 --left
 	button_press = true
 	end
-
-	-- if button pressed, set speed
 	if btn(1) and right_edge == false then
 	paddle_x_speed = 5 --right
 	button_press = true
 	end
-
-	-- when button no longer pressed, decelerate
 	if not(button_press) then
 		paddle_x_speed=paddle_x_speed/2
 	end
-	
-	-- assign the speed to actually move the paddle
 	paddle_x_pos += paddle_x_speed 
 end
 
--- this collision code checks the ball has NOT hit, so non-collision? :)
-function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
-	-- find top of ball and left edge of paddle	
-	if ball_y_pos - ball_radius > paddle_y_pos + paddle_height then		
-		return false -- ball has not hit left edge of paddle
-	end
-	-- find bottom of ball and top edge of paddle
-	if ball_y_pos + ball_radius < paddle_y_pos then -- I think this is wrong		
-		return false -- ball has not hit top edge of paddle
-	end
-	-- find left side of ball and right edge of paddle	
-	if ball_x_pos - ball_radius > paddle_x_pos + paddle_width then		
-		return false -- ball has not hit left edge of paddle
-	end
-	-- find bottm of ball and top edge of paddle
-	if ball_x_pos + ball_radius < paddle_x_pos then -- I think this is wrong		
-		return false -- ball has not hit top edge of paddle
-	end
-	return true
-end
+-- function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
+-- 	-- find top of ball and left edge of paddle	
+-- 	if ball_y_pos - ball_radius > paddle_y_pos + paddle_height then		
+-- 		return false -- ball has not hit left edge of paddle
+-- 	end
+-- 	-- find bottom of ball and top edge of paddle
+-- 	if ball_y_pos + ball_radius < paddle_y_pos then -- I think this is wrong		
+-- 		return false -- ball has not hit top edge of paddle
+-- 	end
+-- 	-- find left side of ball and right edge of paddle	
+-- 	if ball_x_pos - ball_radius > paddle_x_pos + paddle_width then		
+-- 		return false -- ball has not hit left edge of paddle
+-- 	end
+-- 	-- find bottm of ball and top edge of paddle
+-- 	if ball_x_pos + ball_radius < paddle_x_pos then -- I think this is wrong		
+-- 		return false -- ball has not hit top edge of paddle
+-- 	end
+-- 	return true
+-- end
 
-function change_paddle_colour_on_collision()
-	if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
-		paddle_collision = 8
-		sfx(1)
+function paddle_hit_location()
+	-- did bottom of ball hit top of paddle?
+	if (ball_y_pos + ball_radius == paddle_y_pos-1) and
+	   ball_x_pos >= paddle_x_pos and
+	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
 		ball_y_move = -ball_y_move
-	else
-		paddle_collision = 7
+		sfx(1)
 	end
+	-- did top of ball hit bottm of paddle?
+	if ball_y_pos-ball_radius == (paddle_y_pos+paddle_height+1) and
+	   ball_x_pos >= paddle_x_pos and
+	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
+		ball_y_move = -ball_y_move	
+		sfx(1)
+	end
+	-- did right side of ball hit left side of paddle?
+	if (ball_y_pos >= paddle_y_pos) and 
+	   (ball_y_pos <= paddle_y_pos+paddle_height) and
+	   ball_x_pos+ball_radius+1 >= paddle_x_pos and
+	   ball_x_pos+ball_radius+1 <= paddle_x_pos+paddle_height then		
+		ball_x_move = -ball_x_move		
+		sfx(1)
+	end	
 end
 
 
