@@ -7,10 +7,10 @@ box_w = 64
 box_h = 30
 
 -- relates to the line simulating the ball impact
-ball_start_x_pos = 0
-ball_start_y_pos = 0
+ball_start_x_pos = 30
+ball_start_y_pos = 50
 ball_horizontal_movement = 2
-ball_vertical_movement = 1
+ball_vertical_movement = 2
 -- top left = 2, 2
 -- top right = -2, 2
 -- bottom left = 2, -2
@@ -41,8 +41,11 @@ function _draw()
  cls()
  -- draw the box
  rect(box_x, box_y, box_x+box_w, box_y+box_h, 7)
- --print('ball_start_x_pos '..ball_start_x_pos, 0, 80, 7)
- --print('ball_start_y_pos '..ball_start_y_pos, 0, 90, 7)
+ print('ball_start_x_pos '..ball_start_x_pos, 0, 0, 7)
+ print('ball_start_y_pos '..ball_start_y_pos, 0, 10, 7) 
+ print('box_x '..box_x, 0, 20, 7)
+ print('box_y '..box_y, 0, 30, 7)
+ 
  
  -- create local versions of ball position (needed for drawing for some reason)
  local local_ball_start_x_pos, local_ball_start_y_pos = ball_start_x_pos, ball_start_y_pos
@@ -57,11 +60,11 @@ function _draw()
  until local_ball_start_x_pos<0 or local_ball_start_x_pos>128 or local_ball_start_y_pos < 0 or local_ball_start_y_pos > 128
 
  if deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movement,ball_vertical_movement,box_x,box_y,box_w,box_h) == true then
-  print("Horizontal bounce")
+  print("Horizontal bounce", 0, 110, 7)
  elseif deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movement,ball_vertical_movement,box_x,box_y,box_w,box_h) == false then
-  print("Vertical bounce") 
+  print("Vertical bounce", 0, 110, 7)
  end
- print(debug1)
+ print(debug1, 0, 120, 7)
 end
 
 function deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movement,ball_vertical_movement,box_x,box_y,box_w,box_h)
@@ -76,14 +79,19 @@ function deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movemen
  else -- if it's neither of those cases, it MUST be moving diagonally
   -- calculate slope
   local slope = ball_vertical_movement / ball_horizontal_movement
+  print('slope '..slope, 0, 40, 7)
   local cx, cy
-  -- check variants
+
+  -- determine which direction ball is moving
   if slope > 0 and ball_horizontal_movement > 0 then
    -- moving down right
    debug1="q1 top left"
    cx = box_x - ball_start_x_pos
    cy = box_y - ball_start_y_pos
-   if cx<=0 then
+   print('cx '..cx, 0, 50, 7)
+   print('cy '..cy, 0, 60, 7)
+
+   if cx <= 0 then
     return false
    elseif cy / cx < slope then
     return true
@@ -91,10 +99,10 @@ function deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movemen
     return false
    end
   elseif slope < 0 and ball_horizontal_movement > 0 then
-   debug1="q2 bottom left"
+   debug1="q2 bottom left"   
    -- moving up right
    cx = box_x - ball_start_x_pos
-   cy = box_y + box_h-ball_start_y_pos
+   cy = box_y + box_h - ball_start_y_pos
    if cx <= 0 then
     return false
    elseif cy / cx < slope then
@@ -105,8 +113,8 @@ function deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movemen
   elseif slope > 0 and ball_horizontal_movement < 0 then
    debug1="q3 bottom right"
    -- moving left up
-   cx = box_x + box_w-ball_start_x_pos
-   cy = box_y + box_h-ball_start_y_pos
+   cx = box_x + box_w - ball_start_x_pos
+   cy = box_y + box_h - ball_start_y_pos
    if cx >= 0 then
     return false
    elseif cy / cx > slope then
@@ -117,7 +125,7 @@ function deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movemen
   else
    -- moving left down
    debug1="q4 top right"
-   cx = box_x + box_w-ball_start_x_pos
+   cx = box_x + box_w - ball_start_x_pos
    cy = box_y - ball_start_y_pos
    if cx >= 0 then
     return false
@@ -137,3 +145,4 @@ __gfx__
 00077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00700700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
