@@ -24,7 +24,10 @@ function _init() -- runs once at start
 end
 
 function _update() -- runs every frame	
-	-- paddle movement
+	-- variables used later
+	local next_ball_x_pos, next_ball_y_pos
+
+	-- paddle movement when player presses keys
 	local button_press = false
 	if btn(0) then
 	paddle_x_speed = -5 --left
@@ -39,26 +42,41 @@ function _update() -- runs every frame
 	end
 	paddle_x_pos += paddle_x_speed 
 	
-	--ball movement
-	ball_x_pos += ball_x_move
-	ball_y_pos += ball_y_move
+	-- store ball position for next frame
+	next_ball_x_pos = ball_x_pos + ball_x_move
+	next_ball_y_pos = ball_y_pos + ball_y_move
 	
 	-- screen bounce
-	if ball_x_pos >= 127 or ball_x_pos < 0 then
+	-- check if ball would be out of screen boundary
+	if next_ball_x_pos >= 127 or next_ball_x_pos < 0 then
+		-- mid function always returns the middle of the values		
+		next_ball_x_pos = mid(0, next_ball_x_pos, 127)
 		ball_x_move = -ball_x_move
 		sfx(0)
 	end	
-	if ball_y_pos >= 127 or ball_y_pos <= 0 then
+	if next_ball_y_pos >= 127 or next_ball_y_pos <= 0 then
+		next_ball_y_pos = mid(0, next_ball_y_pos, 127)
 		ball_y_move = -ball_y_move
 		sfx(0)
 	end		
 
+	paddle_collision = 7 -- set paddle back to default colour
 	--change paddle colour on collision
-	if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
+	if ball_paddle_collision(next_ball_x_pos, next_ball_y_pos, paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
+		if deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movement,ball_vertical_movement,box_x,box_y,box_w,box_h) then
+			-- if this function returns true, we need to deflect ball horizontally
+			ball_x_move = -ball_x_move	
+		else
+			ball_y_move = -ball_y_move	
+		end
 		paddle_collision = 8
-		sfx(1)
-		ball_y_move = -ball_y_move	
+		sfx(1)		
 	end
+
+	-- actually move the ball position
+	ball_x_pos = next_ball_x_pos
+	ball_y_pos = next_ball_y_pos
+
 end
 
 function _draw() -- runs every frame (after update)
@@ -71,24 +89,96 @@ function _draw() -- runs every frame (after update)
 	rectfill(paddle_x_pos, paddle_y_pos, paddle_x_pos+paddle_width, paddle_y_pos+paddle_height, paddle_collision)	
 end
 
-function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
+function ball_paddle_collision(next_ball_x_pos, next_ball_y_pos, paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
 	-- find top of ball and left edge of paddle	
-	if ball_y_pos - ball_radius > paddle_y_pos + paddle_height then		
+	if next_ball_y_pos - ball_radius > paddle_y_pos + paddle_height then		
 		return false -- ball has not hit left edge of paddle
 	end
 	-- find bottom of ball and top edge of paddle
-	if ball_y_pos + ball_radius < paddle_y_pos then -- I think this is wrong		
+	if next_ball_y_pos + ball_radius < paddle_y_pos then -- I think this is wrong		
 		return false -- ball has not hit top edge of paddle
 	end
 	-- find left side of ball and right edge of paddle	
-	if ball_x_pos - ball_radius > paddle_x_pos + paddle_width then		
+	if next_ball_x_pos - ball_radius > paddle_x_pos + paddle_width then		
 		return false -- ball has not hit left edge of paddle
 	end
 	-- find bottm of ball and top edge of paddle
-	if ball_x_pos + ball_radius < paddle_x_pos then -- I think this is wrong		
+	if next_ball_x_pos + ball_radius < paddle_x_pos then -- I think this is wrong		
 		return false -- ball has not hit top edge of paddle
 	end
 	return true
+end
+
+function deflx_ballbox(ball_start_x_pos,ball_start_y_pos,ball_horizontal_movement,ball_vertical_movement,box_x,box_y,box_w,box_h)
+ -- calculate whether to deflect ball horizontally or vertically
+
+  -- if ball moving perfectly vertically exit function
+ if ball_horizontal_movement == 0 then 
+  return false
+ -- if ball moving perfectly horizontally exit function
+ elseif ball_vertical_movement == 0 then
+  return true
+ else -- if it's neither of those cases, it MUST be moving diagonally
+  -- calculate slope
+  local slope = ball_vertical_movement / ball_horizontal_movement
+  print('slope '..slope, 0, 40, 7)
+  local cx, cy
+
+  -- determine which direction ball is moving
+  if slope > 0 and ball_horizontal_movement > 0 then
+   -- moving down right
+   debug1="q1 top left"
+   cx = box_x - ball_start_x_pos
+   cy = box_y - ball_start_y_pos
+   print('cx '..cx, 0, 50, 7)
+   print('cy '..cy, 0, 60, 7)
+
+   if cx <= 0 then
+    return false
+   elseif cy / cx < slope then
+    return true
+   else
+    return false
+   end
+  elseif slope < 0 and ball_horizontal_movement > 0 then
+   debug1="q2 bottom left"   
+   -- moving up right
+   cx = box_x - ball_start_x_pos
+   cy = box_y + box_h - ball_start_y_pos
+   if cx <= 0 then
+    return false
+   elseif cy / cx < slope then
+    return false
+   else
+    return true
+   end
+  elseif slope > 0 and ball_horizontal_movement < 0 then
+   debug1="q3 bottom right"
+   -- moving left up
+   cx = box_x + box_w - ball_start_x_pos
+   cy = box_y + box_h - ball_start_y_pos
+   if cx >= 0 then
+    return false
+   elseif cy / cx > slope then
+    return false
+   else
+    return true
+   end
+  else
+   -- moving left down
+   debug1="q4 top right"
+   cx = box_x + box_w - ball_start_x_pos
+   cy = box_y - ball_start_y_pos
+   if cx >= 0 then
+    return false
+   elseif cy / cx < slope then
+    return false
+   else
+    return true
+   end
+  end
+ end
+ return false
 end
 
 -- moved into update to match Kristen's
