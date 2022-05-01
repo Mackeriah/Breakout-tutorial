@@ -15,11 +15,11 @@ function _init() -- runs once at start
 	pulse_speed = 0.5
 	
 	-- paddle info
-	paddle_x_pos = 10
-	paddle_y_pos = 110
+	paddle_x_pos = 52
+	paddle_y_pos = 120
+	paddle_x_speed = 0
 	paddle_width = 24
 	paddle_height = 3
-	paddle_x_speed = 5
 	paddle_collision = 7	
 end
 
@@ -35,7 +35,7 @@ function _update() -- runs every frame
 	button_press = true
 	end
 	if not(button_press) then
-		paddle_x_speed=paddle_x_speed/1.7
+		paddle_x_speed = paddle_x_speed /  1.7
 	end
 	paddle_x_pos += paddle_x_speed 
 	
@@ -44,11 +44,11 @@ function _update() -- runs every frame
 	ball_y_pos += ball_y_move
 	
 	-- screen bounce
-	if ball_x_pos+ball_radius >= 127 or ball_x_pos-ball_radius < 0 then
+	if ball_x_pos >= 127 or ball_x_pos < 0 then
 		ball_x_move = -ball_x_move
 		sfx(0)
 	end	
-	if ball_y_pos+ball_radius >= 127 or ball_y_pos-ball_radius <= 0 then
+	if ball_y_pos >= 127 or ball_y_pos <= 0 then
 		ball_y_move = -ball_y_move
 		sfx(0)
 	end		
