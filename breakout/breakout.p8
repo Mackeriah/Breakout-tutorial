@@ -4,12 +4,25 @@ __lua__
 -- super breakout
 -- owen fitzgerald
 
+
+
+
+
+
+
+
+-- first of 4 parts of my collision tested OK (ball bottom against paddle top)
+
+
+
+
+
 sausages = false
 
 function _init() -- runs once at start
 	cls(0)
 	-- ball info
-	ball_x_pos = 75
+	ball_x_pos = 84
 	ball_y_pos = 30
 	ball_radius = 0
 	ball_x_speed = 0
@@ -20,7 +33,7 @@ function _init() -- runs once at start
 	paddle_y_pos = 100
 	paddle_width = 24
 	paddle_height = 20
-	paddle_speed = 5
+	paddle_speed = 0
 end
 
 function _update() -- runs every frame	
@@ -40,14 +53,22 @@ function _draw() -- runs every frame (after update)
 	--print(paddle_speed, 0, 0, 7)	
 	print('ball_x_pos '..ball_x_pos)
 	print('ball_y_pos '..ball_y_pos)
-	print('paddle y pos (TOP) '..paddle_y_pos)
-	print('paddle x pos '..paddle_x_pos)
-	print('paddle width (BOTTOM) '..paddle_width)
-	print('paddle speed '..paddle_speed)
+	print('pad y pos (TOP) '..paddle_y_pos)
+	print('pad xpos (L edge)'..paddle_x_pos)
+	print('pad width '..paddle_width)
+	print('pad xpos+width (R edge) '..paddle_x_pos+paddle_width)
+	print('pad speed '..paddle_speed)
 	print(sausages)
+	print("ball bottom + paddle top working", 0, 50, 8)
 
-	if (ball_y_pos+ball_radius == paddle_y_pos-1) then
+	if (ball_y_pos + ball_radius > paddle_y_pos-1) then
 		sausages = true
+	end
+	if ball_x_pos < paddle_x_pos then	
+		 sausages = true
+	end
+	if ball_x_pos > paddle_x_pos+paddle_width then	
+	 	 sausages = true
 	end
 	-- if (ball_y_pos + ball_radius == paddle_y_pos-1) and
 	--    ball_x_pos >= paddle_x_pos and
@@ -115,11 +136,11 @@ function paddle_movement()
 end
 
 function ball_paddle_collision()
-	-- did bottom of ball hit top of paddle?
-	if (ball_y_pos + ball_radius == paddle_y_pos-1) and
-	   ball_x_pos >= paddle_x_pos and
-	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
-		ball_y_speed = -ball_y_speed
+	-- did bottom of ball hit top of paddle? (-1 as that's the contact point)
+	if (ball_y_pos + ball_radius == paddle_y_pos-1) and	   
+	   ball_x_pos >= paddle_x_pos and -- check ball is at or beyond paddle left side
+	   (ball_x_pos <= paddle_x_pos+paddle_width) then -- and right side
+		ball_y_speed = -ball_y_speed -- therefore vertical bounce
 		sfx(1)
 	end
 	-- did top of ball hit bottm of paddle?
