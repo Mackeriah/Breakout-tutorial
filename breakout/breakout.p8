@@ -4,7 +4,6 @@ __lua__
 -- super breakout
 -- owen fitzgerald
 
-
 function _init() -- runs once at start
 	cls(0)
 	-- ball info
@@ -25,52 +24,26 @@ function _init() -- runs once at start
 end
 
 function _update() -- runs every frame	
-	screen_paddle_limit()
-	paddle_movement()
-	screen_bounce()
-	ball_movement()
-	--ball_pulse()
-	paddle_hit_location()	
-
-	change paddle colour on collision
-	if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
-		paddle_collision = 8
-		sfx(1)
-		ball_y_move = -ball_y_move
-	else
-		paddle_collision = 7
+	-- paddle movement
+	local button_press = false
+	if btn(0) then
+	paddle_x_speed = -5 --left
+	button_press = true
 	end
-end
-
-function _draw() -- runs every frame (after update)
-	cls(0)
-	rectfill(0,0,127,127,1) -- the game area
-	circfill(ball_x_pos, ball_y_pos, ball_radius, 10) -- draw the ball
-	draw_paddle()
-	print("save me on github now!", 20, 45, 8)
-	--print(location, 0, 0, 8)
-	--print('Ball top '..ball_y_pos-ball_radius, 0, 10, 7)
-	--print('ball_y_pos+ball_radius '..ball_y_pos+ball_radius, 0, 20, 7)
- 
-end
-
-function draw_paddle()
-	rectfill(paddle_x_pos, paddle_y_pos, paddle_x_pos+paddle_width, paddle_y_pos+paddle_height, paddle_collision)
-end
-
-function ball_movement()
+	if btn(1) then
+	paddle_x_speed = 5 --right
+	button_press = true
+	end
+	if not(button_press) then
+		paddle_x_speed=paddle_x_speed/1.7
+	end
+	paddle_x_pos += paddle_x_speed 
+	
+	--ball movement
 	ball_x_pos += ball_x_move
 	ball_y_pos += ball_y_move
-end
-
-function ball_pulse()
-	ball_radius = ball_radius+pulse_speed
-	if ball_radius > 3 or ball_radius < 2 then
-		pulse_speed = -pulse_speed
-	end	
-end
-
-function screen_bounce()
+	
+	-- screen bounce
 	if ball_x_pos+ball_radius >= 127 or ball_x_pos-ball_radius < 0 then
 		ball_x_move = -ball_x_move
 		sfx(0)
@@ -78,38 +51,24 @@ function screen_bounce()
 	if ball_y_pos+ball_radius >= 127 or ball_y_pos-ball_radius <= 0 then
 		ball_y_move = -ball_y_move
 		sfx(0)
-	end	
-end
+	end		
 
-function screen_paddle_limit()
-	if paddle_x_pos+paddle_width > 127 then
-	 right_edge = true
-		paddle_x_pos = 128-paddle_width
-	else
-		right_edge = false
-	end
-	if paddle_x_pos < 1 then
-	 left_edge = true
-		paddle_x_pos = 0
-	else
-		left_edge = false	
+	--change paddle colour on collision
+	if ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height) then
+		paddle_collision = 8
+		sfx(1)
+		ball_y_move = -ball_y_move	
 	end
 end
 
-function paddle_movement()
-	local button_press = false
-	if btn(0) and left_edge == false then
-	paddle_x_speed = -5 --left
-	button_press = true
-	end
-	if btn(1) and right_edge == false then
-	paddle_x_speed = 5 --right
-	button_press = true
-	end
-	if not(button_press) then
-		paddle_x_speed=paddle_x_speed/2
-	end
-	paddle_x_pos += paddle_x_speed 
+function _draw() -- runs every frame (after update)
+	cls(0) -- not in Kristen's code for some reason! WEIRD
+	-- the game area
+	rectfill(0,0,127,127,1) 
+	-- draw the ball
+	circfill(ball_x_pos, ball_y_pos, ball_radius, 10)
+	-- draw paddle
+	rectfill(paddle_x_pos, paddle_y_pos, paddle_x_pos+paddle_width, paddle_y_pos+paddle_height, paddle_collision)	
 end
 
 function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_height)
@@ -131,6 +90,66 @@ function ball_paddle_collision(paddle_x_pos, paddle_y_pos, paddle_width, paddle_
 	end
 	return true
 end
+
+-- moved into update to match Kristen's
+-- function ball_movement()
+-- 	ball_x_pos += ball_x_move
+-- 	ball_y_pos += ball_y_move
+-- end
+
+-- function ball_pulse()
+-- 	ball_radius = ball_radius+pulse_speed
+-- 	if ball_radius > 3 or ball_radius < 2 then
+-- 		pulse_speed = -pulse_speed
+-- 	end	
+-- end
+
+-- commented out so same as Kristen's
+-- function screen_bounce()
+-- 	if ball_x_pos+ball_radius >= 127 or ball_x_pos-ball_radius < 0 then
+-- 		ball_x_move = -ball_x_move
+-- 		sfx(0)
+-- 	end	
+-- 	if ball_y_pos+ball_radius >= 127 or ball_y_pos-ball_radius <= 0 then
+-- 		ball_y_move = -ball_y_move
+-- 		sfx(0)
+-- 	end	
+-- end
+
+-- commented out as I added this
+-- function screen_paddle_limit()
+-- 	if paddle_x_pos+paddle_width > 127 then
+-- 	 right_edge = true
+-- 		paddle_x_pos = 128-paddle_width
+-- 	else
+-- 		right_edge = false
+-- 	end
+-- 	if paddle_x_pos < 1 then
+-- 	 left_edge = true
+-- 		paddle_x_pos = 0
+-- 	else
+-- 		left_edge = false	
+-- 	end
+-- end
+
+-- moved into update to match Kristen's
+-- function paddle_movement()
+-- 	local button_press = false
+-- 	if btn(0) and left_edge == false then
+-- 	paddle_x_speed = -5 --left
+-- 	button_press = true
+-- 	end
+-- 	if btn(1) and right_edge == false then
+-- 	paddle_x_speed = 5 --right
+-- 	button_press = true
+-- 	end
+-- 	if not(button_press) then
+-- 		paddle_x_speed=paddle_x_speed/2
+-- 	end
+-- 	paddle_x_pos += paddle_x_speed 
+-- end
+
+
 
 
 __gfx__
