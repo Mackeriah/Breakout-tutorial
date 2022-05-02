@@ -9,7 +9,7 @@ sausages = false
 function _init() -- runs once at start
 	cls(0)
 	-- ball info
-	ball_x_pos = 40
+	ball_x_pos = 100
 	ball_y_pos = 105
 	ball_radius = 0
 	ball_x_speed = 1
@@ -43,6 +43,7 @@ function _draw() -- runs every frame (after update)
 	print('ball_x_pos '..ball_x_pos)		
 	print('pad xpos (L edge)'..paddle_x_pos)
 	print('pad xpos + pad height)'..paddle_x_pos+paddle_height)	
+	print('pad xpos + pad width)'..paddle_x_pos+paddle_width)	
 	print(sausages)
 	
 	--if (ball_y_pos >= paddle_y_pos) and (ball_y_pos <= paddle_y_pos + paddle_height) then
@@ -110,32 +111,35 @@ end
 function ball_paddle_collision()
 	-- THIS PART IS WORKING CORRECTLY
 	-- did bottom of ball hit top of paddle? (-1 as that's the contact point)
-	if (ball_y_pos + ball_radius == paddle_y_pos-1) and	   
-	   ball_x_pos >= paddle_x_pos and -- check ball is at or beyond paddle left side
-	   (ball_x_pos <= paddle_x_pos+paddle_width) then -- and right side
-		ball_y_speed = -ball_y_speed -- therefore vertical bounce
-		sfx(1)
-	end
-	-- did right side of ball hit left side of paddle?
-	if ball_x_pos + ball_radius >= paddle_x_pos then	   
-		-- ball_x_speed = -ball_x_speed		
-		--sfx(2)
-	end
+	-- if (ball_y_pos + ball_radius == paddle_y_pos-1) and	   
+	--    ball_x_pos >= paddle_x_pos and -- check ball is at or beyond paddle left side
+	--    (ball_x_pos <= paddle_x_pos+paddle_width) then -- and right side
+	-- 	ball_y_speed = -ball_y_speed -- therefore vertical bounce
+	-- 	sfx(1)
+	-- end
+
 	-- did left side of ball hit right side of paddle?
-	if (ball_y_pos >= paddle_y_pos) and 
-	   (ball_y_pos <= paddle_y_pos+paddle_height) and
-	   ball_x_pos+ball_radius+1 >= paddle_x_pos and
-	   ball_x_pos+ball_radius+1 <= paddle_x_pos+paddle_height then		
+	-- if ball_x_pos - ball_radius - 1 <= paddle_x_pos + paddle_width and
+	--     ball_x_pos + ball_radius >= paddle_x_pos and
+	--     ball_x_pos + ball_radius <= paddle_x_pos + paddle_height then		
+	-- 	ball_x_speed = -ball_x_speed		
+	-- 	sfx(2)
+	-- end	
+
+	-- did right side of ball hit left side of paddle?
+	if ball_x_pos + ball_radius +1 >= paddle_x_pos and
+	   ball_x_pos + ball_radius +1 <= paddle_x_pos + paddle_height then		
 		ball_x_speed = -ball_x_speed		
-		sfx(1)
+		sfx(2)
 	end
+	
 	-- did top of ball hit bottm of paddle?
-	if ball_y_pos-ball_radius == (paddle_y_pos+paddle_height+1) and
-	   ball_x_pos >= paddle_x_pos and
-	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
-		ball_y_speed = -ball_y_speed	
-		sfx(1)
-	end
+	-- if ball_y_pos-ball_radius == (paddle_y_pos+paddle_height+1) and
+	--    ball_x_pos >= paddle_x_pos and
+	--    (ball_x_pos <= paddle_x_pos+paddle_width) then		
+	-- 	ball_y_speed = -ball_y_speed	
+	-- 	sfx(1)
+	-- end
 	
 end
 
