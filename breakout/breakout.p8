@@ -4,32 +4,19 @@ __lua__
 -- super breakout
 -- owen fitzgerald
 
-
-
-
-
-
-
-
--- first of 4 parts of my collision tested OK (ball bottom against paddle top)
-
-
-
-
-
 sausages = false
 
 function _init() -- runs once at start
 	cls(0)
 	-- ball info
-	ball_x_pos = 84
-	ball_y_pos = 30
+	ball_x_pos = 40
+	ball_y_pos = 105
 	ball_radius = 0
-	ball_x_speed = 0
+	ball_x_speed = 1
 	ball_y_speed = 1
 	
 	-- paddle info
-	paddle_x_pos = 60
+	paddle_x_pos = 59
 	paddle_y_pos = 100
 	paddle_width = 24
 	paddle_height = 20
@@ -38,10 +25,10 @@ end
 
 function _update() -- runs every frame	
 	screen_paddle_limit()
+	ball_paddle_collision()
 	paddle_movement()
 	screen_bounce()
 	ball_movement()	
-	ball_paddle_collision()
 end
 
 function _draw() -- runs every frame (after update)
@@ -51,33 +38,18 @@ function _draw() -- runs every frame (after update)
 	draw_paddle()	
 
 	--print(paddle_speed, 0, 0, 7)	
-	print('ball_x_pos '..ball_x_pos)
 	print('ball_y_pos '..ball_y_pos)
 	print('pad y pos (TOP) '..paddle_y_pos)
+	print('ball_x_pos '..ball_x_pos)		
 	print('pad xpos (L edge)'..paddle_x_pos)
-	print('pad width '..paddle_width)
-	print('pad xpos+width (R edge) '..paddle_x_pos+paddle_width)
-	print('pad speed '..paddle_speed)
+	print('pad xpos + pad height)'..paddle_x_pos+paddle_height)	
 	print(sausages)
-	print("ball bottom + paddle top working", 0, 50, 8)
-
-	if (ball_y_pos + ball_radius > paddle_y_pos-1) then
-		sausages = true
-	end
-	if ball_x_pos < paddle_x_pos then	
-		 sausages = true
-	end
-	if ball_x_pos > paddle_x_pos+paddle_width then	
-	 	 sausages = true
-	end
-	-- if (ball_y_pos + ball_radius == paddle_y_pos-1) and
-	--    ball_x_pos >= paddle_x_pos and
-	--    (ball_x_pos <= paddle_x_pos+paddle_width) then		
-	-- 	ball_y_speed = -ball_y_speed
-	-- 	sfx(1)
-	-- end
-
-
+	
+	--if (ball_y_pos >= paddle_y_pos) and (ball_y_pos <= paddle_y_pos + paddle_height) then
+	if ball_x_pos == 59 then
+		sausages = true		
+	end	
+	
 end
 
 function draw_paddle()
@@ -136,6 +108,7 @@ function paddle_movement()
 end
 
 function ball_paddle_collision()
+	-- THIS PART IS WORKING CORRECTLY
 	-- did bottom of ball hit top of paddle? (-1 as that's the contact point)
 	if (ball_y_pos + ball_radius == paddle_y_pos-1) and	   
 	   ball_x_pos >= paddle_x_pos and -- check ball is at or beyond paddle left side
@@ -143,20 +116,10 @@ function ball_paddle_collision()
 		ball_y_speed = -ball_y_speed -- therefore vertical bounce
 		sfx(1)
 	end
-	-- did top of ball hit bottm of paddle?
-	if ball_y_pos-ball_radius == (paddle_y_pos+paddle_height+1) and
-	   ball_x_pos >= paddle_x_pos and
-	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
-		ball_y_speed = -ball_y_speed	
-		sfx(1)
-	end
 	-- did right side of ball hit left side of paddle?
-	if (ball_y_pos >= paddle_y_pos) and 
-	   (ball_y_pos <= paddle_y_pos+paddle_height) and
-	   ball_x_pos+ball_radius+1 >= paddle_x_pos and
-	   ball_x_pos+ball_radius+1 <= paddle_x_pos+paddle_height then		
-		ball_x_speed = -ball_x_speed		
-		sfx(1)
+	if ball_x_pos + ball_radius >= paddle_x_pos then	   
+		-- ball_x_speed = -ball_x_speed		
+		--sfx(2)
 	end
 	-- did left side of ball hit right side of paddle?
 	if (ball_y_pos >= paddle_y_pos) and 
@@ -166,6 +129,14 @@ function ball_paddle_collision()
 		ball_x_speed = -ball_x_speed		
 		sfx(1)
 	end
+	-- did top of ball hit bottm of paddle?
+	if ball_y_pos-ball_radius == (paddle_y_pos+paddle_height+1) and
+	   ball_x_pos >= paddle_x_pos and
+	   (ball_x_pos <= paddle_x_pos+paddle_width) then		
+		ball_y_speed = -ball_y_speed	
+		sfx(1)
+	end
+	
 end
 
 
@@ -179,3 +150,4 @@ __gfx__
 __sfx__
 00010000240101e0101e01018010120100c0500b3000b3000a3000a300003000130019300063000a3001570014700117000f7000e7001d7001d700237002770032700347003670038700397003b7003c7003d700
 0002000015020170201b0201d020200201e0201a02000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000001d02000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
