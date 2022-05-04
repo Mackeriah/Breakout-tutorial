@@ -9,39 +9,44 @@ sausages = false
 function _init() -- runs once at start
 	cls(0)
 	-- ball info
-	ball_x_pos = 100
-	ball_y_pos = 105
+	ball_x_pos = 59
+	ball_y_pos = 60
 	ball_radius = 0
-	ball_x_speed = 1
-	ball_y_speed = 1
+	ball_x_speed = 0
+	ball_y_speed = 0
 	
 	-- paddle info
-	paddle_x_pos = 59
-	paddle_y_pos = 100
+	paddle_x_pos = 60
+	paddle_y_pos = 60
 	paddle_width = 24
-	paddle_height = 20
+	paddle_height = 60
 	paddle_speed = 0
 end
 
 function _update() -- runs every frame	
 	screen_paddle_limit()
 	ball_paddle_collision()
+	ball_movement()
 	paddle_movement()
 	screen_bounce()
-	ball_movement()	
 end
 
 function _draw() -- runs every frame (after update)
 	cls(0)
 	rectfill(0,0,127,127,1) -- the game area
-	circfill(ball_x_pos, ball_y_pos, ball_radius, 10) -- draw the ball
+	circfill(ball_x_pos, ball_y_pos, ball_radius, 8) -- draw the ball
 	draw_paddle()	
 
-	--print(paddle_speed, 0, 0, 7)	
+	print('ball_x_pos '..ball_x_pos)
 	print('ball_y_pos '..ball_y_pos)
-	print('pad y pos (TOP) '..paddle_y_pos)
-	print('ball_x_pos '..ball_x_pos)		
-	print('pad xpos (L edge)'..paddle_x_pos)
+	print('ball radius '..ball_radius)
+	print('ball_x + rad '..ball_x_pos+ball_radius)
+
+	print('pad x pos (top l) '..paddle_x_pos)
+	print('pad y pos (top l) '..paddle_y_pos)
+	print('pad x pos (bot r) '..paddle_x_pos+paddle_height)
+	print('pad y pos (bot r) '..paddle_y_pos+paddle_height)		
+	print('pad xpos '..paddle_x_pos)
 	print('pad xpos + pad height)'..paddle_x_pos+paddle_height)	
 	print('pad xpos + pad width)'..paddle_x_pos+paddle_width)	
 	print(sausages)
@@ -128,11 +133,16 @@ function ball_paddle_collision()
 		sfx(2)
 	end	
 
-	-- THIS PART IS WORKING CORRECTLY
-	-- did right side of ball hit left side of paddle?
-	if (ball_y_pos >= paddle_y_pos) and (ball_y_pos <= paddle_y_pos+paddle_height) and -- ball in line with paddle
-	   ball_x_pos + ball_radius +1 >= paddle_x_pos and
-	   ball_x_pos + ball_radius +1 <= paddle_x_pos + paddle_height then		
+	-- did right side of ball hit left side of paddle? -- THIS PART IS WORKING CORRECTLY
+	-- if ball is between top and bottom of paddle
+	-- hmm I need to consider ball radius too, although IF I won't be changing ball radius I 
+	-- can handle this with magic numbers as I'll know the radius
+	-- need to consider if ball partially hits paddle, whereas the below is just from centre
+	if (ball_y_pos >= paddle_y_pos) and (ball_y_pos <= paddle_y_pos+paddle_height) and
+		-- if ball 
+	   ball_y_pos + ball_radius +1 >= paddle_y_pos and
+	   -- if ball including it's radius is equal or less than paddle x plus paddle height 
+	   ball_y_pos + ball_radius +1 <= paddle_y_pos + paddle_height then		
 		ball_x_speed = -ball_x_speed		
 		sfx(2)
 	end
