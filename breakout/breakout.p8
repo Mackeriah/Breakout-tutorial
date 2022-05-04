@@ -134,12 +134,16 @@ function ball_paddle_collision()
 	end	
 
 	-- if I check current x and y pos against next x and y I think I can determine which way ball is moving
-	-- if current_x == next_x and current_y > next_y then ball is going DOWN
-	-- if current_x == next_x and current_y < next_y then ball is going UP
-	-- if current_y == next_y and current_x > next_x then ball is going RIGHT
-	-- if current_y == next_y and current_x < next_x then ball is going LEFT
+	-- if next_x == current_x and next_y > current_y then ball is going DOWN
+	-- if next_x == current_x  and next_y < current_y then ball is going UP
+	-- if next_x > current_x and next_y == current_y then ball is going RIGHT
+	-- if next_x < current_x and next_y == current_y then ball is going LEFT
 
-	-- if current_x > next_x and current_y > next_y then ball is going diaganolly down right
+	-- if next_x > current_x and next_y > current_y then ball is going diaganolly DOWN RIGHT
+	-- if next_x < current_x and next_y > current_y then ball is going diaganolly DOWN LEFT
+	-- if next_x > current_x and next_y < current_y then ball is going diaganolly UP RIGHT
+	-- if next_x < current_x and next_y < current_y then ball is going diaganolly UP LEFT	
+	
 
 	-- did right side of ball hit left side of paddle? -- THIS PART IS WORKING CORRECTLY
 	-- if ball is between top and bottom of paddle
