@@ -13,7 +13,7 @@ function _init() -- runs once at start
 	ball_y_pos = 60
 	ball_radius = 0
 	ball_x_speed = 0
-	ball_y_speed = 0
+	ball_y_speed = 1
 	
 	-- paddle info
 	paddle_x_pos = 60
@@ -132,6 +132,14 @@ function ball_paddle_collision()
 		ball_x_speed = -ball_x_speed		
 		sfx(2)
 	end	
+
+	-- if I check current x and y pos against next x and y I think I can determine which way ball is moving
+	-- if current_x == next_x and current_y > next_y then ball is going DOWN
+	-- if current_x == next_x and current_y < next_y then ball is going UP
+	-- if current_y == next_y and current_x > next_x then ball is going RIGHT
+	-- if current_y == next_y and current_x < next_x then ball is going LEFT
+
+	-- if current_x > next_x and current_y > next_y then ball is going diaganolly down right
 
 	-- did right side of ball hit left side of paddle? -- THIS PART IS WORKING CORRECTLY
 	-- if ball is between top and bottom of paddle
