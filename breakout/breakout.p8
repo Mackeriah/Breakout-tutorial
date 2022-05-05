@@ -174,12 +174,11 @@ function ball_paddle_collision()
 		up_left = 'false'	
 	else
 		down_right = 'false'
-	end
-	
+	end	
 
-
-
-	
+	-- *************** REMINDER: you might end up wanting a global variable called ball_direction and
+	-- update this with whatever the current movement is. e.g. left, right, down-right, up-left etc and
+	-- then I can refer to this to determine the type of collision I use
 
 
 	-- THIS PART IS WORKING CORRECTLY
