@@ -12,11 +12,13 @@ function _init() -- runs once at start
 	ball_x_pos = 59
 	ball_y_pos = 60
 	ball_radius = 0
-	ball_x_speed = 1
-	ball_y_speed = 1
+	ball_x_speed = 0
+	ball_y_speed = 3
 	ball_prev_x_pos = 0
 	ball_prev_y_pos = 0
 	ball_direction = 'down'
+	ball_next_x_pos = 0
+	ball_next_y_pos = 0
 	
 	-- paddle info
 	paddle_x_pos = 60
@@ -26,12 +28,16 @@ function _init() -- runs once at start
 	paddle_speed = 0
 end
 
-function _update() -- runs every frame	
+function _update() -- runs every frame
+	-- determine next x and y positions for ball
+	ball_next_x_pos = ball_x_pos + ball_x_speed
+	ball_next_y_pos = ball_y_pos + ball_y_speed
+
 	screen_paddle_limit()
 	ball_paddle_collision()
-	ball_movement()
 	paddle_movement()
 	screen_bounce()
+	ball_movement()
 end
 
 function _draw() -- runs every frame (after update)
@@ -40,10 +46,11 @@ function _draw() -- runs every frame (after update)
 	circfill(ball_x_pos, ball_y_pos, ball_radius, 8) -- the ball
 	draw_paddle()	
 
-	-- print('ball_x_pos '..ball_x_pos)
-	-- print('prev_ball_x_pos '..prev_ball_x_pos)
+	print('ball_y_speed '..ball_y_speed)
 	print('ball_y_pos '..ball_y_pos)
 	print('ball_prev_y_pos '..ball_prev_y_pos)
+	-- print('ball_next_x_pos '..ball_next_x_pos)
+	print('ball_next_y_pos '..ball_next_y_pos)
 	-- print('ball radius '..ball_radius)
 	-- print('ball_x + rad '..ball_x_pos+ball_radius)
 	-- print('pad x pos (top l) '..paddle_x_pos)
@@ -53,7 +60,11 @@ function _draw() -- runs every frame (after update)
 	-- print('pad xpos '..paddle_x_pos)
 	-- print('pad xpos + pad height)'..paddle_x_pos+paddle_height)	
 	-- print('pad xpos + pad width)'..paddle_x_pos+paddle_width)	
-	print('ball direction:'..ball_direction)	
+	print(sausages)
+	print('ball direction:'..ball_direction)
+	if (ball_y_pos > 127) then
+		sausages = true
+	end
 	 
 end
 
@@ -67,17 +78,20 @@ function ball_movement()
 	ball_prev_y_pos = ball_y_pos
 	
 	-- move ball
-	ball_x_pos += ball_x_speed
-	ball_y_pos += ball_y_speed
+	ball_x_pos = ball_next_x_pos
+	ball_y_pos = ball_next_y_pos
 end
 
 -- tested this works 100% unless speed > 10
 function screen_bounce()
-	if ball_x_pos + ball_radius >= 127 or ball_x_pos - ball_radius <= 0 then
+
+	if ball_next_x_pos + ball_radius >= 127 or ball_next_x_pos - ball_radius <= 0 then
+		ball_next_x_pos = mid(0,ball_next_x_pos,127)
 		ball_x_speed = -ball_x_speed		
 		sfx(0)
 	end	
-	if ball_y_pos + ball_radius >= 127 or ball_y_pos - ball_radius <= 0 then
+	if ball_next_y_pos + ball_radius >= 127 or ball_next_y_pos - ball_radius <= 0 then
+		ball_next_y_pos = mid(0,ball_next_y_pos,127)
 		ball_y_speed = -ball_y_speed
 		sfx(0)
 	end	
@@ -153,7 +167,7 @@ function ball_paddle_collision()
 
 	-- THIS PART IS WORKING CORRECTLY
 	-- did bottom of ball hit top of paddle? (-1 as then ball is touching paddle)
-	if (ball_y_pos + ball_radius == paddle_y_pos - 1) and	   
+	if (ball_y_pos + ball_radius == paddle_y_pos - 3) and	   
 	   ball_x_pos >= paddle_x_pos and -- check ball is in line with left edge or beyond...
 	   (ball_x_pos <= paddle_x_pos+paddle_width) then -- up to the edge of paddle right side
 		ball_y_speed = -ball_y_speed -- therefore vertical bounce
