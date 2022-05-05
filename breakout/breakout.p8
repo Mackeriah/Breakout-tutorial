@@ -16,15 +16,7 @@ function _init() -- runs once at start
 	ball_y_speed = 1
 	ball_prev_x_pos = 0
 	ball_prev_y_pos = 0
-
-	up = 'false'
-	down = 'false'
-	left = 'false'
-	right = 'false'
-	down_right = 'false'
-	down_left = 'false'
-	up_right = 'false'
-	up_left = 'false'
+	ball_direction = 'down'
 	
 	-- paddle info
 	paddle_x_pos = 60
@@ -44,8 +36,8 @@ end
 
 function _draw() -- runs every frame (after update)
 	cls(0)
-	rectfill(0,0,127,127,1) -- the game area
-	circfill(ball_x_pos, ball_y_pos, ball_radius, 8) -- draw the ball
+	rectfill(0,0,127,127,1) -- game area
+	circfill(ball_x_pos, ball_y_pos, ball_radius, 8) -- the ball
 	draw_paddle()	
 
 	-- print('ball_x_pos '..ball_x_pos)
@@ -61,15 +53,7 @@ function _draw() -- runs every frame (after update)
 	-- print('pad xpos '..paddle_x_pos)
 	-- print('pad xpos + pad height)'..paddle_x_pos+paddle_height)	
 	-- print('pad xpos + pad width)'..paddle_x_pos+paddle_width)	
-	print('up:'..up)
-	print('down:'..down)
-	print('left:'..left)
-	print('right:'..right)
-
-	print('down_right:'..down_right)
-	print('down_left:'..down_left)
-	print('up_right:'..up_right)
-	print('up_left:'..up_left)	
+	print('ball direction:'..ball_direction)	
 	 
 end
 
@@ -135,57 +119,43 @@ end
 
 function ball_paddle_collision()
 
-	-- if I check current x and y pos against next x and y I think I can determine which way ball is moving
-	-- if next_x == current_x and next_y > current_y then ball is going DOWN
-	-- if next_x == current_x  and next_y < current_y then ball is going UP
-	-- if next_x > current_x and next_y == current_y then ball is going RIGHT
-	-- if next_x < current_x and next_y == current_y then ball is going LEFT
-
-	-- if next_x > current_x and next_y > current_y then ball is going diaganolly DOWN RIGHT
-	-- if next_x < current_x and next_y > current_y then ball is going diaganolly DOWN LEFT
-	-- if next_x > current_x and next_y < current_y then ball is going diaganolly UP RIGHT
-	-- if next_x < current_x and next_y < current_y then ball is going diaganolly UP LEFT	
-
-
-	-- I have a feeling that I need to cater for ball changing direction
 	if ball_x_pos == ball_prev_x_pos and ball_y_pos > ball_prev_y_pos then 
-		down = 'true' 
-		up = 'false'
+		ball_direction = 'down'
 	end
 	if ball_x_pos == ball_prev_x_pos and ball_y_pos < ball_prev_y_pos then
-		up = 'true' 
-		down = 'false'
+		ball_direction = 'up'
 	end
 
 	if ball_x_pos > ball_prev_x_pos and ball_y_pos == ball_prev_y_pos then 
-		right = 'true' 
-		left = 'false'
+		ball_direction = 'right'
 	end
 
 	if ball_x_pos < ball_prev_x_pos and ball_y_pos == ball_prev_y_pos then 
-		left = 'true'
-		right = 'false' 		
+		ball_direction = 'left'
 	end	
 	
 	if ball_x_pos > ball_prev_x_pos and ball_y_pos > ball_prev_y_pos then 
-		down_right = 'true'
-		down_left = 'false'
-		up_right = 'false'
-		up_left = 'false'	
-	else
-		down_right = 'false'
+		ball_direction = 'down_right'
 	end	
 
-	-- *************** REMINDER: you might end up wanting a global variable called ball_direction and
-	-- update this with whatever the current movement is. e.g. left, right, down-right, up-left etc and
-	-- then I can refer to this to determine the type of collision I use
+	if ball_x_pos > ball_prev_x_pos and ball_y_pos < ball_prev_y_pos then 
+		ball_direction = 'up_right'
+	end	
+
+	if ball_x_pos < ball_prev_x_pos and ball_y_pos > ball_prev_y_pos then 
+		ball_direction = 'down_left'
+	end	
+
+	if ball_x_pos < ball_prev_x_pos and ball_y_pos < ball_prev_y_pos then 
+		ball_direction = 'up_left'
+	end	
 
 
 	-- THIS PART IS WORKING CORRECTLY
-	-- did bottom of ball hit top of paddle? (-1 as that's the contact point)
-	if (ball_y_pos + ball_radius == paddle_y_pos-1) and	   
-	   ball_x_pos >= paddle_x_pos and -- check ball is at or beyond paddle left side
-	   (ball_x_pos <= paddle_x_pos+paddle_width) then -- and right side
+	-- did bottom of ball hit top of paddle? (-1 as then ball is touching paddle)
+	if (ball_y_pos + ball_radius == paddle_y_pos - 1) and	   
+	   ball_x_pos >= paddle_x_pos and -- check ball is in line with left edge or beyond...
+	   (ball_x_pos <= paddle_x_pos+paddle_width) then -- up to the edge of paddle right side
 		ball_y_speed = -ball_y_speed -- therefore vertical bounce
 		sfx(1)
 	end
