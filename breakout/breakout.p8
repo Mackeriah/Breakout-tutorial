@@ -29,7 +29,9 @@ function _init() -- runs once at start
 end
 
 function _update() -- runs every frame
+
 	-- determine next x and y positions for ball
+	-- can probably add to collision function but leave here for now
 	ball_next_x_pos = ball_x_pos + ball_x_speed
 	ball_next_y_pos = ball_y_pos + ball_y_speed
 
@@ -49,8 +51,8 @@ function _draw() -- runs every frame (after update)
 	print('ball_y_speed '..ball_y_speed)
 	print('ball_y_pos '..ball_y_pos)
 	print('ball_prev_y_pos '..ball_prev_y_pos)
-	-- print('ball_next_x_pos '..ball_next_x_pos)
 	print('ball_next_y_pos '..ball_next_y_pos)
+	-- print('ball_next_x_pos '..ball_next_x_pos)	
 	-- print('ball radius '..ball_radius)
 	-- print('ball_x + rad '..ball_x_pos+ball_radius)
 	-- print('pad x pos (top l) '..paddle_x_pos)
@@ -60,11 +62,11 @@ function _draw() -- runs every frame (after update)
 	-- print('pad xpos '..paddle_x_pos)
 	-- print('pad xpos + pad height)'..paddle_x_pos+paddle_height)	
 	-- print('pad xpos + pad width)'..paddle_x_pos+paddle_width)	
-	print(sausages)
-	print('ball direction:'..ball_direction)
-	if (ball_y_pos > 127) then
-		sausages = true
-	end
+	-- print(sausages)
+	-- print('ball direction:'..ball_direction)
+	-- if (ball_y_pos > 127) or (ball_y_pos < 0)  then
+	-- 	sausages = true
+	-- end
 	 
 end
 
@@ -86,6 +88,11 @@ end
 function screen_bounce()
 
 	if ball_next_x_pos + ball_radius >= 127 or ball_next_x_pos - ball_radius <= 0 then
+		-- this code essentially checks that the desired next ball position won't 
+		-- put it beyond the screen edges, in which case it sets to either
+		-- 0 for left edge
+		-- or 127 for right edge
+		-- or whatever the desired next ball position is (meaning it's not about to hit either edge)
 		ball_next_x_pos = mid(0,ball_next_x_pos,127)
 		ball_x_speed = -ball_x_speed		
 		sfx(0)
@@ -174,7 +181,7 @@ function ball_paddle_collision()
 		sfx(1)
 	end
 
-	-- THIS PART APPEARWS TO BE WORKING CORRECTLY!
+	-- THIS PART APPEARS TO BE WORKING CORRECTLY!
 	-- did left side of ball hit right side of paddle?	
 	-- if (ball_y_pos >= paddle_y_pos) and (ball_y_pos <= paddle_y_pos+paddle_height) and -- ball in line with paddle
 	--    ball_x_pos + ball_radius - 1 <= paddle_x_pos + paddle_width and -- when ball hits paddle right side
