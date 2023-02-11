@@ -1,2 +1,2 @@
 # PICO8-Breakout
-Breakout style game for PICO-8
+Breakout style YouTube tutorial for PICO-8.
